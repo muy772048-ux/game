@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验体7号</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d0d1a;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+        .box {
+            background: #1a1a2e;
+            padding: 24px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(100, 100, 255, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #8a8aff;
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        .sub {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            border-bottom: 1px solid #2a2a40;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+        #story {
+            background: #0d0d1a;
+            padding: 18px;
+            border-radius: 12px;
+            min-height: 100px;
+            border-left: 3px solid #8a8aff;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        #options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .opt {
+            background: #2a2a44;
+            border: 1px solid #444;
+            color: #eee;
+            padding: 13px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.25s;
+            text-align: left;
+        }
+        .opt:hover {
+            background: #8a8aff;
+            color: #000;
+            border-color: #8a8aff;
+            transform: translateX(4px);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 11px;
+            color: #555;
+        }
+        .reset-btn {
+            background: #8a8aff;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+            width: 100%;
+            transition: 0.25s;
+        }
+        .reset-btn:hover {
+            background: #a8a8ff;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>🧪 实验体7号</h1>
+    <div class="sub">— 文字冒险游戏 —</div>
+    <div id="story">加载中...</div>
+    <div id="options"></div>
+    <button class="reset-btn" onclick="resetGame()">🔄 重新开始</button>
+    <div class="footer">选择你的命运</div>
+</div>
+
+<script>
+    const story = {
+        start: {
+            text: "你从一张陌生的床上醒来，头痛欲裂。\n昨晚好像喝了什么奇怪的东西...\n\n你想起身看看周围环境，但身体有些虚弱。",
+            options: [
+                { label: "🔍 检查房间里的书桌", next: "desk" },
+                { label: "🚪 打开门走出去", next: "door" },
+                { label: "🪟 从窗户翻出去", next: "window" }
+            ]
+        },
+        desk: {
+            text: "你走向书桌，上面放着一杯已经凉透的咖啡，还有一张泛黄的纸条。\n\n纸条上写着：\n『别相信任何人，尤其是那个穿白大褂的人。』\n\n你隐约觉得这句话很重要...",
+            options: [
+                { label: "🚪 打开门走出去", next: "door" },
+                { label: "🪟 从窗户翻出去", next: "window" }
+            ]
+        },
+        door: {
+            text: "你打开门，外面是一条长长的走廊，走廊尽头的灯忽明忽暗。\n\n一个穿白大褂的人正背对着你，他好像没注意到你。\n\n你该怎么办？",
+            options: [
+                { label: "🔦 悄悄跟上去看看", next: "follow" },
+                { label: "🏃 转身跑回房间锁门", next: "room" },
+                { label: "🗣️ 喊住他问清楚", next: "ask" }
+            ]
+        },
+        window: {
+            text: "你推开窗户，外面是两米高的草地。\n你深吸一口气，跳了下去。\n\n脚踝扭伤了，但你发现这是一所废弃的学校，操场空无一人。\n\n远处似乎有一扇铁门...",
+            options: [
+                { label: "🚶 走向铁门看看", next: "gate" },
+                { label: "🔙 爬回房间", next: "room" }
+            ]
+        },
+        follow: {
+            text: "你悄悄跟上去，白大褂人走进了一间标着『院长办公室』的房间。\n你贴在门缝上偷听，听到他说：\n『...实验体7号醒了，加大剂量。』\n\n你意识到自己可能是实验品！",
+            options: [
+                { label: "💥 撞门进去质问", next: "confront" },
+                { label: "📱 找地方报警", next: "police" },
+                { label: "🔙 悄悄撤回房间", next: "room" }
+            ]
+        },
+        room: {
+            text: "你回到房间锁好门，心跳得厉害。\n书桌上的纸条还在，你觉得它一定有更多信息。\n\n你拿起纸条对着光看，背面还有一行小字：\n『记住，钥匙在消防栓里。』",
+            options: [
+                { label: "🔑 去走廊找消防栓", next: "fire" },
+                { label: "🪟 这次从窗户走", next: "window" }
+            ]
+        },
+        ask: {
+            text: "你喊了一声：『喂！这里是哪里？』\n白大褂人转过身，露出一个诡异的笑容。\n他说：『你醒了啊，实验体7号。欢迎回家。』\n\n他拿出一个遥控器按了一下，你眼前一黑...",
+            options: [
+                { label: "💤 重新开始", next: "start" }
+            ]
+        },
+        gate: {
+            text: "你走到铁门前，发现门没锁。\n推开门的瞬间，阳光照了进来！\n你看到大街上车水马龙，自由了！！！\n\n突然，你听到身后传来急促的脚步声...",
+            options: [
+                { label: "🏃 头也不回地冲向大街", next: "freedom" },
+                { label: "👀 回头看一眼是谁", next: "lookback" }
+            ]
+        },
+        confront: {
+            text: "你撞开门冲进去，白大褂人惊讶地看着你。\n你一拳挥过去，他躲开了，但手里的资料掉在地上。\n你捡起来一看，上面写着『人体实验计划书』。\n\n你拿着证据跑出了校园，终于自由了！",
+            options: [
+                { label: "🏆 重新开始", next: "start" }
+            ]
+        },
+        police: {
+            text: "你找到电话报警，警方十分钟后赶到。\n原来这个废弃学校被黑心组织用作非法实验基地。\n\nyou成功获救，成为了帮助警方破案的重要证人！",
+            options: [
+                { label: "🏆 重新开始", next: "start" }
+            ]
+        },
+        fire: {
+            text: "你在走廊尽头的消防栓里找到了一把钥匙。\n上面贴着标签：『院长办公室-备用』\n\n你决定去院长办公室一探究竟...",
+            options: [
+                { label: "🔑 打开院长办公室的门", next: "confront" },
+                { label: "🔙 撤回房间另想办法", next: "room" }
+            ]
+        },
+        freedom: {
+            text: "你冲向大街，拦下一辆出租车。\n司机问你：『小伙子去哪？』\n你喘着气说：『去最近的派出所！』\n\n车开出后，你终于松了口气。\n这场噩梦结束了。",
+            options: [
+                { label: "🏆 重新开始", next: "start" }
+            ]
+        },
+        lookback: {
+            text: "你回头一看，是白大褂人！他气喘吁吁地追上来。\n你立刻转身想跑，但脚踝剧痛，摔倒在地。\n他走过来扶起你，说：『别跑，我是来救你的。』\n\n原来他是卧底警察，一直在搜集证据。",
+            options: [
+                { label: "🏆 重新开始", next: "start" }
+            ]
+        }
+    };
+
+    function goTo(nodeId) {
+        const node = story[nodeId];
+        if (!node) return;
+        document.getElementById('story').textContent = node.text;
+        const container = document.getElementById('options');
+        container.innerHTML = '';
+        node.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'opt';
+            btn.textContent = opt.label;
+            btn.onclick = () => goTo(opt.next);
+            container.appendChild(btn);
+        });
+    }
+
+    function resetGame() {
+        goTo('start');
+    }
+
+    // 游戏启动
+    goTo('start');
+</script>
+</body>
+</html>
